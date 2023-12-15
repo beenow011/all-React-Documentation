@@ -13,9 +13,10 @@ https://create-react-app.dev/docs/adding-custom-environment-variables/
 To prevent accidentally leaking env variables to the client, only variables prefixed with VITE_ are exposed to your Vite-processed code. e.g. for the following env variables:
 
 
-VITE_SOME_KEY=123
-DB_PASSWORD=foobar
-Only VITE_SOME_KEY will be exposed as import.meta.env.VITE_SOME_KEY to your client source code, but DB_PASSWORD will not.
+VITE_SOME_KEY=123<br>
+DB_PASSWORD=foobar<br>
+Only VITE_SOME_KEY will be exposed as
+<br>import.meta.env.VITE_SOME_KEY <br> to your client source code, but DB_PASSWORD will not.
 <br>
 https://vitejs.dev/guide/env-and-mode
 <br>
