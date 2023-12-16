@@ -21,7 +21,8 @@ Only VITE_SOME_KEY will be exposed as<br>
 https://vitejs.dev/guide/env-and-mode
 <br>
 <br>
-** setting up appwrite **<br>
+** setting up appwrite **
+<br>
 1) create new project <br>
 2) create new database <br>
 3) create new collectiom <br>
@@ -41,9 +42,9 @@ https://vitejs.dev/guide/env-and-mode
      }
     export default conf
 
-<br><br><br><br>
-****Setting up auth for appwrite ****
-<br>
+
+**Setting up auth for appwrite **
+
 create a appwrite folder inside src and create auth.js<br>
 import conf and user info:
    ```
@@ -81,10 +82,8 @@ export default authService
         }
     }
    ```
- <br>
-** 2)Login**:
- 
- ```
+** 2)Login:**
+  ```
 async login({email,password}){
         try{
           return await this.account.createEmailSession(email,password);
@@ -95,7 +94,7 @@ async login({email,password}){
 
     }
  ```
-<br><
+
 **3)to get current user:**
 ```
  async getCurrentUser(){
@@ -107,10 +106,9 @@ async login({email,password}){
         // return null;
     }
 ```
-<br>
-**4)logout:**
 
- ```
+**4)logout:**
+```
 async logout(){
         try{
            return await this.account.deleteSessions();
@@ -121,5 +119,95 @@ async logout(){
     }
 ```
 
+<br><br><br><br>
+**setup the service configuration**
+<br><br>
+make another file inside appwrite named config.js<br>
+```
+import conf from "../conf/conf";
+import { Client, ID , Databases , Storage ,Query} from "appwrite";
 
+export class Service{
+    client = new Client();
+    databases ;
+    bucket;
+    constructor(){
+        this.client
+            .setEndpoint(conf.appwriteUrl)
+            .setProject(conf.appwriteProjectId);
+        this.databases = new Databases(this.client);
+        this.bucket = new Databases(this.client)
+    }
+}
+const service = new Service();
+export default service;
+```
 
+**1)creating post**
+```
+async createPost({title,slug,content,featuredImage,status,userId}){
+        try{
+           return await this.databases.createDocument(conf.appwriteDatabaseId,conf.appwriteCollectionId,slug,{
+                title,
+                content,
+                featuredImage,
+                status,
+                userId,
+            })
+        }catch(error){
+            throw error;
+        }
+    }
+```
+**2)updating post**
+```
+ async updatePost(slug,{title,content,featuredImage,status}){
+        try{
+           return await this.databases.updateDocument(conf.appwriteDatabaseId,conf.appwriteCollectionId,slug,{
+                title,
+                content,
+                featuredImage,
+                status,
+            })
+        }catch(error){
+            throw error;
+        }
+    }
+```
+**3)deleting post**
+```
+ async deletePost(slug){
+        try{
+           await this.databases.deleteDocument(conf.appwriteDatabaseId,conf.appwriteCollectionId,slug);
+           return true;
+        }catch(error){
+            // throw error;
+            console.log("Appwrite error :: delete post:: error",error)
+            return false;
+        }
+    }
+```
+**4)get a single particular post**
+```
+async getPost(slug){
+        try{
+        return await this.databases.getDocument(conf.appwriteDatabaseId,conf.appwriteCollectionId,slug);
+           
+        }catch(error){
+            // throw error;
+            console.log("Appwrite error :: get post:: error",error)
+            return false;
+        }
+    }
+```
+**5)get all posts**
+```
+async getPosts(queries = [Query.equal("status","active")]){
+        try{
+            return await this.databases.listDocuments(conf.appwriteDatabaseId,conf.appwriteCollectionId,queries)
+        }catch(error){
+            console.log("Appwrite error :: get post:: error",error)
+            return false;
+        }
+    }
+```
