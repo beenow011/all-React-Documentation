@@ -40,4 +40,86 @@ https://vitejs.dev/guide/env-and-mode
     appwriteBucketId : String(import.meta.VITE_APPWRITE_BUCKET_ID) 
      }
     export default conf
+
+<br><br><br><br>
+****Setting up auth for appwrite ****
+<br>
+create a appwrite folder inside src and create auth.js<br>
+import conf and user info:
+   ```
+      import conf from "../conf/conf";
+      import { Client, Account, ID } from "appwrite";
 ```
+best option is to create a class with new client <br>
+```
+export class AuthService{
+    client = new Client();
+    account;
+    constructor(){
+        this.client
+            .setEndpoint(conf.appwriteUrl)
+            .setProject(conf.appwriteProjectId);
+        this.account = new Account();
+    }
+}
+const authService = new AuthService();
+export default authService
+```
+
+**1) sign up:** <br>https://appwrite.io/docs/products/auth/email-password <br>
+   ```
+    async createAccount ({email,password,name}){
+        try{
+           const userAccount = await this.account.create(ID.unique(),email,password,name);
+           if(userAccount){
+            this.login(email,password);
+           }else{
+            return userAccount;
+           }
+        }catch(error){
+            throw error;
+        }
+    }
+   ```
+ <br>
+** 2)Login**:
+ 
+ ```
+async login({email,password}){
+        try{
+          return await this.account.createEmailSession(email,password);
+        }catch(error){
+            throw error;
+        }
+        // return null;
+
+    }
+ ```
+<br><
+**3)to get current user:**
+```
+ async getCurrentUser(){
+        try{
+            return await this.account.get();
+        }catch(error){
+            throw error;
+        }
+        // return null;
+    }
+```
+<br>
+**4)logout:**
+
+ ```
+async logout(){
+        try{
+           return await this.account.deleteSessions();
+        }catch(error){
+            throw error;
+        }
+        // return null;
+    }
+```
+
+
+
