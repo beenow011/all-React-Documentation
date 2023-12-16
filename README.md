@@ -211,3 +211,38 @@ async getPosts(queries = [Query.equal("status","active")]){
         }
     }
 ```
+**For uploading file service**
+<br>create new methods inside the same class Service<br>
+**1)Upload file**
+```
+ async uploadFile(file){
+        try{
+            return await this.databases.createFile(conf.appwriteBucketId,ID.unique(),file)
+        }catch(error){
+            console.log("Appwrite error :: upload file:: error",error)
+            return false;
+        }
+    }
+```
+**2)Delete file**
+```
+ async deleteFile(fileId){
+        try{
+             await this.databases.deleteFile(conf.appwriteBucketId,fileId);
+             return true;
+        }catch(error){
+            console.log("Appwrite error :: delete file:: error",error)
+            return false;
+        }
+    }
+```
+**3)get file preview**
+```
+getFilePreview(fileId){
+        return this.bucket.getFilePreview(conf.appwriteBucketId,fileId)
+    }
+```
+
+<br> config completed
+<br>
+now build your react store,slice,setup your redux and router and build all the components.
